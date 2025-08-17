@@ -1,5 +1,26 @@
 local pastafolies = {}
 
+-- utilitaires
+
+local R, G, B, A
+function pastafolies.setColor(r, g, b, a)
+  R, G, B, A = love.graphics.getColor()
+  love.graphics.setColor(r, g, b, a)
+end
+
+function pastafolies.resetColor()
+  love.graphics.setColor(R, G, B, A)
+end
+
+function pastafolies.reverse(pasta)
+  local newPasta = {}
+  for i = #pasta - 1, 1, -2 do
+    table.insert(newPasta, pasta[i])
+    table.insert(newPasta, pasta[i + 1])
+  end
+  return newPasta
+end
+
 -- construction
 
 function pastafolies.addPoint(pasta, x, y)
@@ -14,9 +35,9 @@ end
 
 -- édition
 
-function pastafolies.pullPasta(pasta, dx, dy)
+function pastafolies.pullPastaSegments(pasta, from, dx, dy)
   local x, y, l, lp, ratio
-  for i = 1, #pasta - 2, 2 do
+  for i = from, #pasta - 2, 2 do
     l = math.sqrt(math.pow(pasta[i + 2] - pasta[i], 2) + math.pow(pasta[i + 3] - pasta[i + 1], 2)) -- longueur du segment
     x, y = pasta[i] + dx, pasta[i + 1] + dy -- nouveau point de départ
     lp = math.sqrt(math.pow(pasta[i + 2] - x, 2) + math.pow(pasta[i + 3] - y, 2)) -- longueur du nouveau segment
@@ -26,20 +47,16 @@ function pastafolies.pullPasta(pasta, dx, dy)
     pasta[i] = x
     pasta[i + 1] = y
   end
-  pasta[#pasta - 1] = pasta[#pasta - 1] + dx
-  pasta[#pasta] = pasta[#pasta] + dy
+  return dx, dy
 end
 
--- utilitaires
-
-local R, G, B, A
-function pastafolies.setColor(r, g, b, a)
-  R, G, B, A = love.graphics.getColor()
-  love.graphics.setColor(r, g, b, a)
-end
-
-function pastafolies.resetColor()
-  love.graphics.setColor(R, G, B, A)
+function pastafolies.pullPasta(pasta, dx, dy)
+  dx, dy = pastafolies.pullPastaSegments(pasta, 1, dx, dy)
+  local newPasta = pastafolies.reverse(pasta)
+  dx, dy = pastafolies.pullPastaSegments(newPasta, 3, -dx, -dy)
+  newPasta[#newPasta - 1] = newPasta[#newPasta - 1] + dx
+  newPasta[#newPasta] = newPasta[#newPasta] + dy
+  return pastafolies.reverse(newPasta)
 end
 
 -- draw

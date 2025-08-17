@@ -4,8 +4,11 @@ local obstacles = {}
 
 function love.load()
   pastafolies.addPoint(pasta, 100, 300)
+  pastafolies.addPoint(pasta, 200, 300)
   pastafolies.addPoint(pasta, 300, 300)
+  pastafolies.addPoint(pasta, 300, 200)
   pastafolies.addPoint(pasta, 300, 100)
+  pastafolies.addPoint(pasta, 200, 100)
   pastafolies.addPoint(pasta, 100, 100)
   pastafolies.addObstacle(obstacles, 200, 150)
   pastafolies.addObstacle(obstacles, 200, 250)
@@ -22,7 +25,7 @@ end
 
 function love.mousemoved(x, y, dx, dy)
   if love.keyboard.isDown('lgui') then
-    pastafolies.pullPasta(pasta, dx, dy)
+    pasta = pastafolies.pullPasta(pasta, dx, dy)
   end
 end
 
