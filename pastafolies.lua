@@ -25,6 +25,14 @@ function pastafolies.len(x, y)
   return math.sqrt(math.pow(x, 2) + math.pow(y, 2))
 end
 
+function pastafolies.p2c(r, t)
+  return r * math.cos(t), r * math.sin(t)
+end
+
+function pastafolies.c2p(x, y)
+  return pastafolies.len(x, y), math.atan2(y, x)
+end
+
 -- construction
 
 function pastafolies.addPoint(pasta, x, y)
