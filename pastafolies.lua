@@ -21,6 +21,10 @@ function pastafolies.reverse(pasta)
   return newPasta
 end
 
+function pastafolies.len(x, y)
+  return math.sqrt(math.pow(x, 2) + math.pow(y, 2))
+end
+
 -- construction
 
 function pastafolies.addPoint(pasta, x, y)
@@ -35,12 +39,12 @@ end
 
 -- édition
 
-function pastafolies.pullPastaSegments(pasta, from, dx, dy)
+function pastafolies.pullPastaSegments(obstacles, pasta, from, dx, dy)
   local x, y, l, lp, ratio
   for i = from, #pasta - 2, 2 do
-    l = math.sqrt(math.pow(pasta[i + 2] - pasta[i], 2) + math.pow(pasta[i + 3] - pasta[i + 1], 2)) -- longueur du segment
+    l = pastafolies.len(pasta[i + 2] - pasta[i], pasta[i + 3] - pasta[i + 1]) -- longueur du segment
     x, y = pasta[i] + dx, pasta[i + 1] + dy -- nouveau point de départ
-    lp = math.sqrt(math.pow(pasta[i + 2] - x, 2) + math.pow(pasta[i + 3] - y, 2)) -- longueur du nouveau segment
+    lp = pastafolies.len(pasta[i + 2] - x, pasta[i + 3] - y) -- longueur du nouveau segment
     ratio = l / lp
     dx = x + ratio * (pasta[i + 2] - x) - pasta[i + 2]
     dy = y + ratio * (pasta[i + 3] - y) - pasta[i + 3]
@@ -50,10 +54,10 @@ function pastafolies.pullPastaSegments(pasta, from, dx, dy)
   return dx, dy
 end
 
-function pastafolies.pullPasta(pasta, dx, dy)
-  dx, dy = pastafolies.pullPastaSegments(pasta, 1, dx, dy)
+function pastafolies.pullPasta(obstacles, pasta, dx, dy)
+  dx, dy = pastafolies.pullPastaSegments(obstacles, pasta, 1, dx, dy)
   local newPasta = pastafolies.reverse(pasta)
-  dx, dy = pastafolies.pullPastaSegments(newPasta, 3, -dx, -dy)
+  dx, dy = pastafolies.pullPastaSegments(obstacles, newPasta, 3, -dx, -dy)
   newPasta[#newPasta - 1] = newPasta[#newPasta - 1] + dx
   newPasta[#newPasta] = newPasta[#newPasta] + dy
   return pastafolies.reverse(newPasta)

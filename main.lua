@@ -25,7 +25,7 @@ end
 
 function love.mousemoved(x, y, dx, dy)
   if love.keyboard.isDown('lgui') then
-    pasta = pastafolies.pullPasta(pasta, dx, dy)
+    pasta = pastafolies.pullPasta(obstacles, pasta, dx, dy)
   end
 end
 
