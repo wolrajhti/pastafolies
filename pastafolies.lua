@@ -33,6 +33,44 @@ function pastafolies.c2p(x, y)
   return pastafolies.len(x, y), math.atan2(y, x)
 end
 
+function pastafolies.normalizeAngle(a)
+  return a % (2 * math.pi)
+end
+
+function pastafolies.diffAngle(a, b)
+  local d = pastafolies.normalizeAngle(b - a)
+  if d > math.pi then
+    return d - 2 * math.pi
+  end
+  return d
+end
+
+function pastafolies.firstInSweep(obstacles, cx, cy, sx, sy, dx, dy)
+  local sr, st = pastafolies.c2p(sx - cx, sy - cy)
+  local _, et = pastafolies.c2p(sx - cx + dx, sy - cy + dy)
+  local d = pastafolies.diffAngle(st, et)
+  local r, t, best_i, best_delta = nil, nil, nil, nil
+
+  for i = 1, #obstacles - 1, 2 do
+    r, t = pastafolies.c2p(obstacles[i] - cx, obstacles[i + 1] - cy)
+    local delta = pastafolies.diffAngle(st, t)
+    if r < sr and
+      (
+        (d >= 0 and delta >= 0 and delta <= math.abs(d)) or
+        (d < 0  and delta <= 0 and delta >= -math.abs(d))
+      ) and
+      (
+        not best_delta or
+        math.abs(delta) < math.abs(best_delta)
+      )
+    then
+      best_i, best_delta = i, delta
+    end
+  end
+
+  return best_i
+end
+
 -- construction
 
 function pastafolies.addPoint(pasta, x, y)
