@@ -12,13 +12,16 @@ function pastafolies.resetColor()
   love.graphics.setColor(R, G, B, A)
 end
 
-function pastafolies.reverse(pasta)
-  local newPasta = {}
+function pastafolies.reverse(pasta, types)
+  local newPasta, newTypes = {}, {}
   for i = #pasta - 1, 1, -2 do
     table.insert(newPasta, pasta[i])
     table.insert(newPasta, pasta[i + 1])
   end
-  return newPasta
+  for i = #types, 1, -1 do
+    table.insert(newTypes, types[i])
+  end
+  return newPasta, newTypes
 end
 
 function pastafolies.len(x, y)
@@ -73,9 +76,10 @@ end
 
 -- construction
 
-function pastafolies.addPoint(pasta, x, y)
+function pastafolies.addPoint(pasta, types, x, y, t)
   table.insert(pasta, x)
   table.insert(pasta, y)
+  types[#pasta / 2] = t or false
 end
 
 function pastafolies.addObstacle(obstacles, x, y)
@@ -85,9 +89,14 @@ end
 
 -- édition
 
-function pastafolies.pullPastaSegments(obstacles, pasta, from, dx, dy)
-  local x, y, l, lp, ratio
-  for i = from, #pasta - 2, 2 do
+function pastafolies.pullPastaSegments(obstacles, pasta, types, from, dx, dy)
+  local x, y, l, lp, ratio --, index
+  local i = from
+  while i < #pasta - 2 do
+    -- index = pastafolies.firstInSweep(obstacles, pasta[i + 2], pasta[i + 3], pasta[i], pasta[i + 1], dx, dy)
+    -- if index then
+    --   print('collision', index)
+    -- end
     l = pastafolies.len(pasta[i + 2] - pasta[i], pasta[i + 3] - pasta[i + 1]) -- longueur du segment
     x, y = pasta[i] + dx, pasta[i + 1] + dy -- nouveau point de départ
     lp = pastafolies.len(pasta[i + 2] - x, pasta[i + 3] - y) -- longueur du nouveau segment
@@ -96,23 +105,33 @@ function pastafolies.pullPastaSegments(obstacles, pasta, from, dx, dy)
     dy = y + ratio * (pasta[i + 3] - y) - pasta[i + 3]
     pasta[i] = x
     pasta[i + 1] = y
+    i = i + 2
   end
   return dx, dy
 end
 
-function pastafolies.pullPasta(obstacles, pasta, dx, dy)
-  dx, dy = pastafolies.pullPastaSegments(obstacles, pasta, 1, dx, dy)
-  local newPasta = pastafolies.reverse(pasta)
-  dx, dy = pastafolies.pullPastaSegments(obstacles, newPasta, 3, -dx, -dy)
+function pastafolies.pullPasta(obstacles, pasta, types, dx, dy)
+  dx, dy = pastafolies.pullPastaSegments(obstacles, pasta, types, 1, dx, dy)
+  local newPasta, newTypes = pastafolies.reverse(pasta, types)
+  dx, dy = pastafolies.pullPastaSegments(obstacles, newPasta, newTypes, 3, -dx, -dy)
   newPasta[#newPasta - 1] = newPasta[#newPasta - 1] + dx
   newPasta[#newPasta] = newPasta[#newPasta] + dy
-  return pastafolies.reverse(newPasta)
+  return pastafolies.reverse(newPasta, newTypes)
 end
 
 -- draw
 
-function pastafolies.drawPasta(pasta)
+function pastafolies.drawPasta(pasta, types)
   if #pasta > 2 then
+    pastafolies.setColor(.7, .7, .7, .5)
+    for i, t in ipairs(types) do
+      if t then
+        love.graphics.rectangle('fill', pasta[i * 2 - 1] - 6, pasta[i * 2] - 6, 12, 12)
+      else
+        love.graphics.circle('fill', pasta[i * 2 - 1], pasta[i * 2], 4)
+      end
+    end
+    pastafolies.resetColor()
     pastafolies.setColor(.7, 1, .7, .5)
     love.graphics.circle('fill', pasta[1], pasta[2], 5)
     pastafolies.resetColor()

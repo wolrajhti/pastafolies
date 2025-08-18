@@ -1,5 +1,5 @@
 local pastafolies = require 'pastafolies'
-local pasta = {}
+local pasta, types = {}, {}
 local obstacles = {}
 local W, H
 local LEN
@@ -20,13 +20,22 @@ function setDestination()
 end
 
 function love.load()
-  pastafolies.addPoint(pasta, 100, 300)
-  pastafolies.addPoint(pasta, 200, 300)
-  pastafolies.addPoint(pasta, 300, 300)
-  pastafolies.addPoint(pasta, 300, 200)
-  pastafolies.addPoint(pasta, 300, 100)
-  pastafolies.addPoint(pasta, 200, 100)
-  pastafolies.addPoint(pasta, 100, 100)
+  pastafolies.addPoint(pasta, types, 300, 400)
+  pastafolies.addPoint(pasta, types, 250, 400, true)
+  pastafolies.addPoint(pasta, types, 150, 400, true)
+  pastafolies.addPoint(pasta, types, 100, 400)
+  pastafolies.addPoint(pasta, types, 100, 300)
+  pastafolies.addPoint(pasta, types, 150, 300, true)
+  pastafolies.addPoint(pasta, types, 250, 300, true)
+  pastafolies.addPoint(pasta, types, 300, 300)
+  pastafolies.addPoint(pasta, types, 300, 200)
+  pastafolies.addPoint(pasta, types, 250, 200, true)
+  pastafolies.addPoint(pasta, types, 150, 200, true)
+  pastafolies.addPoint(pasta, types, 100, 200)
+  pastafolies.addPoint(pasta, types, 100, 100)
+  pastafolies.addPoint(pasta, types, 150, 100, true)
+  pastafolies.addPoint(pasta, types, 250, 100, true)
+  pastafolies.addPoint(pasta, types, 300, 100)
   pastafolies.addObstacle(obstacles, 200, 150)
   pastafolies.addObstacle(obstacles, 200, 250)
   pastafolies.addObstacle(obstacles, 200, 350)
@@ -77,7 +86,7 @@ function love.draw()
   -- pastafolies.setColor(0, 0, 1, 1)
   -- love.graphics.circle('fill', DX, DY, 5)
   -- pastafolies.resetColor()
-  pastafolies.drawPasta(pasta)
+  pastafolies.drawPasta(pasta, types)
   -- if index ~= nil then
   --   pastafolies.setColor(1, 1, 1, 1)
   --   love.graphics.circle('fill', obstacles[index], obstacles[index + 1], 6)
@@ -87,7 +96,7 @@ end
 
 function love.mousemoved(x, y, dx, dy)
   if love.keyboard.isDown('lgui') then
-    pasta = pastafolies.pullPasta(obstacles, pasta, dx, dy)
+    pasta, types = pastafolies.pullPasta(obstacles, pasta, types, dx, dy)
   end
 end
 
@@ -95,7 +104,7 @@ function love.mousepressed(x, y)
   -- if love.keyboard.isDown('space') then
   --   pastafolies.addObstacle(obstacles, x, y)
   -- else
-  --   pastafolies.addPoint(pasta, x, y)
+  --   pastafolies.addPoint(pasta, types, x, y)
   -- end
 end
 
