@@ -108,10 +108,20 @@ function love.mousepressed(x, y)
   -- end
 end
 
+local DL = 10
+
 function love.keypressed(key)
   if key == 'space' then
     setOrigin()
   elseif key == 'escape' then
     love.event.quit()
+  elseif key == 'left' then
+    pasta, types = pastafolies.pullPasta(obstacles, pasta, types, -DL, 0)
+  elseif key == 'up' then
+    pasta, types = pastafolies.pullPasta(obstacles, pasta, types, 0, -DL)
+  elseif key == 'right' then
+    pasta, types = pastafolies.pullPasta(obstacles, pasta, types, DL, 0)
+  elseif key == 'down' then
+    pasta, types = pastafolies.pullPasta(obstacles, pasta, types, 0, DL)
   end
 end
